@@ -44,22 +44,16 @@ def plot_experiments_results(exp_res_dict, args):
                                     ['DetGNM', 'AdaptiveDetGNM', 'ClassicalDetGNM'], ['b', 'g', 'r'], ['o', '^', 'v']):
                 data_sums = []
                 data_sizes = []
-                data_sums_of_squares = []
                 for iter_counter in range(args.N_iter):
                     for i in range(args.n_starts):
                         if iter_counter < len(exp_res_dict[gnm_type][name][args.n_dims[-1]][i][stat_name]):
                             if iter_counter >= len(data_sums):
                                 data_sums.append(0.)
                                 data_sizes.append(0)
-                                data_sums_of_squares.append(0.)
                             data_sums[iter_counter] += exp_res_dict[gnm_type][name][args.n_dims[-1]][i][stat_name][iter_counter]
                             data_sizes[iter_counter] += 1
-                            data_sums_of_squares[iter_counter] +=\
-                                exp_res_dict[gnm_type][name][args.n_dims[-1]][i][stat_name][iter_counter] ** 2
                 data_sizes = np.array(data_sizes)
                 data_means = np.array(data_sums) / data_sizes
-                data_stds = np.sqrt(np.abs(data_sizes * (np.array(data_sums_of_squares) / data_sizes - data_means ** 2) /\
-                                    np.where(data_sizes > 1, data_sizes - 1, 1)))
                 label = '{}'.format(method_name)
                 axes[row, col].plot(np.arange(1, data_means.size + 1), data_means, color=c, marker=marker, markevery=mark_period * max(1, data_means.size // 10), markersize=15,
                                     linewidth=3, ls='--', label=label)

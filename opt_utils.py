@@ -49,7 +49,7 @@ def factor_step_probe(F, dF, dF2=None):
     -------
     Tuple
         The tuple of factors for fast computation of the optimization step:
-        Lambda, Q, ... and other factors
+        Lambda, Q, ... and other factors.
         Lambda : array_like
             The diagonal matrix of eigenvalues of hessian-like matrix.
         Q : array_like
@@ -81,7 +81,7 @@ def probe_x(x, eta, B, v):
     B : array_like
         Hessian-like matrix evaluated at x.
     v : array_like
-        Gradient of 0.5 * f_2(x) evaluated at x.
+        Gradient of .5 * f_2(x) evaluated at x.
     Returns
     -------
     array_like
@@ -220,7 +220,7 @@ def sub_adpgpd_solver(jac_est, func_est, x_til, prob_params, debug=False):
         abs_schg = np.linalg.norm(u_next - u_cur, ord=2);
         rel_schg = abs_schg / np.maximum(1., np.linalg.norm(u_cur, ord=2))
 
-        if rel_schg <= prob_params['RelTolSoln'] :
+        if rel_schg <= prob_params['RelTolSoln']:
             if debug:
                 print('Convergence achieved')
                 print('The serarch direction norm and the feasibility gap is below the desired threshold')
@@ -272,6 +272,7 @@ def fast_diff_tau(tauL, F, dF, Lambda, Q, factored_QF, dF2=None):
     """!
     Auxiliary function to compute part of the derivative wrt. \f$\tau\f$.
     Parameters
+    ----------
     tauL : float
         The value of \tau L.
     F : array_like
@@ -287,7 +288,6 @@ def fast_diff_tau(tauL, F, dF, Lambda, Q, factored_QF, dF2=None):
     dF2 : array_like, default=None
         If not None, the doubly stochastic step is used and dF2 is tracted as independently
         sampled jacobian.
-    ----------
     Returns
     ----------
     array_like

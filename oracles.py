@@ -1,8 +1,8 @@
 import numpy as np
 
 
-lim_val = 1e+18 # Maximal absolute value of variables in experiments
-eps = 1e-6 # Tolerance of computations
+lim_val = 1e+18 # Maximal absolute value of variables in experiments.
+eps = 1e-6 # Tolerance of computations.
 
 
 class Oracle(object):
@@ -25,7 +25,7 @@ class Oracle(object):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of f_1
+            Indexes of used functions in the random sample of f_1.
         Returns
         -------
         float
@@ -42,7 +42,7 @@ class Oracle(object):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of f_2
+            Indexes of used functions in the random sample of f_2.
         Returns
         -------
         float
@@ -59,7 +59,7 @@ class Oracle(object):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of \nabla f_2
+            Indexes of used functions in the random sample of \nabla f_2.
         Returns
         -------
         float
@@ -76,7 +76,7 @@ class Oracle(object):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of F
+            Indexes of used functions in the random sample of F.
         Raises
         ------
         NotImplementedError
@@ -92,7 +92,7 @@ class Oracle(object):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of dF
+            Indexes of used functions in the random sample of dF.
         Raises
         ------
         NotImplementedError
@@ -140,7 +140,7 @@ class HatOracle(Oracle):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of F
+            Indexes of used functions in the random sample of F.
         Returns
         -------
         array_like
@@ -159,7 +159,7 @@ class HatOracle(Oracle):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of dF
+            Indexes of used functions in the random sample of dF.
         Returns
         -------
         array_like
@@ -177,8 +177,8 @@ class HatOracle(Oracle):
 
 class RosenbrockEvenSumOracle(Oracle):
     """
-    Rosenbrock function f_{2}(x) = \sum\limits_{i = 1}^{n - 1}(i^2 * (x_{i} - x_{i + 1}^{2})^{2} + (1 - x_{i + 1})^{2})
-    represented as system of partial derivatives.
+    Rosenbrock-Skokov function f_{2}(x) = \sum\limits_{i = 1}^{n - 1}(i^2 * (x_{i} - x_{i + 1}^{2})^{2} + (1 - x_{i + 1})^{2})
+    represented as system of summands.
     Attributes
     ----------
     _m : int
@@ -197,6 +197,11 @@ class RosenbrockEvenSumOracle(Oracle):
         self._m, self._n = 2 * n - 2, n
         self._even_cooords = np.arange(1, self._m, 2)
         self._odd_coords = np.arange(0, self._m, 2)
+
+        self._odd_coords_hp1 = self._odd_coords // 2 + 1
+        self._odd_coords_h = self._odd_coords // 2
+
+        self._even_coords_p1h = (self._even_cooords + 1) // 2
     
     def F(self, x, idxs=None):
         """
@@ -206,7 +211,7 @@ class RosenbrockEvenSumOracle(Oracle):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of F
+            Indexes of used functions in the random sample of F.
         Returns
         -------
         array_like
@@ -214,9 +219,9 @@ class RosenbrockEvenSumOracle(Oracle):
         """
         x = np.clip(x, a_min=-lim_val, a_max=lim_val)
         F_vals = np.zeros(self._m)
-        x_odds = x[self._odd_coords // 2 + 1]
-        F_vals[self._odd_coords] += (self._odd_coords // 2 + 1) * (x[self._odd_coords // 2] - x_odds * x_odds)
-        F_vals[self._even_cooords] += 1. - x[(self._even_cooords + 1) // 2]
+        x_odd = x[self._odd_coords_hp1]
+        F_vals[self._odd_coords] += self._odd_coords_hp1 * (x[self._odd_coords_h] - x_odd * x_odd)
+        F_vals[self._even_cooords] += 1. - x[self._even_coords_p1h]
         F_vals = np.clip(F_vals, a_min=-lim_val, a_max=lim_val)
         if idxs is None:
             return F_vals
@@ -230,7 +235,7 @@ class RosenbrockEvenSumOracle(Oracle):
         x : array_like
             Array of optimizable float parameters.
         idxs : array_like, default=None
-            Indexes of used functions in the random sample of dF
+            Indexes of used functions in the random sample of dF.
         Returns
         -------
         array_like
@@ -239,9 +244,9 @@ class RosenbrockEvenSumOracle(Oracle):
         x = np.clip(x, a_min=-lim_val, a_max=lim_val)
         dF_vals = np.zeros((self._m, self._n))
         
-        dF_vals[self._even_cooords, (self._even_cooords + 1) // 2] += -1
-        dF_vals[self._odd_coords, self._odd_coords // 2] += self._odd_coords // 2 + 1
-        dF_vals[self._odd_coords, self._odd_coords // 2 + 1] += -2. * (self._odd_coords // 2 + 1) * x[self._odd_coords // 2 + 1]
+        dF_vals[self._even_cooords, self._even_coords_p1h] += -1.
+        dF_vals[self._odd_coords, self._odd_coords_h] += self._odd_coords_hp1
+        dF_vals[self._odd_coords, self._odd_coords_hp1] += -2. * self._odd_coords_hp1 * x[self._odd_coords_hp1]
         
         dF_vals = np.clip(dF_vals, a_min=-lim_val, a_max=lim_val)
         if idxs is None:

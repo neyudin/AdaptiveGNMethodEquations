@@ -42,10 +42,10 @@ def time_printer(exp_res_dict, args):
             print('    n:', n, file=f)
             avg_mean_time, avg_mean_sqr_time, mean_time, mean_sqr_time = 0., 0., 0., 0.
             for i in range(args.n_starts):
-                avg_mean_time += exp_res_dict['DetGNM'][name][n][i]["avg_time_s"]
-                avg_mean_sqr_time += exp_res_dict['DetGNM'][name][n][i]["avg_time_s"] ** 2
-                mean_time += exp_res_dict['DetGNM'][name][n][i]["time_s"]
-                mean_sqr_time += exp_res_dict['DetGNM'][name][n][i]["time_s"] ** 2
+                avg_mean_time += exp_res_dict['AdaptiveDetGNM'][name][n][i]["avg_time_s"]
+                avg_mean_sqr_time += exp_res_dict['AdaptiveDetGNM'][name][n][i]["avg_time_s"] ** 2
+                mean_time += exp_res_dict['AdaptiveDetGNM'][name][n][i]["time_s"]
+                mean_sqr_time += exp_res_dict['AdaptiveDetGNM'][name][n][i]["time_s"] ** 2
             avg_mean_time /= args.n_starts
             avg_mean_sqr_time /= args.n_starts
             mean_time /= args.n_starts
@@ -61,10 +61,10 @@ def time_printer(exp_res_dict, args):
             print('    n:', n, file=f)
             avg_mean_time, avg_mean_sqr_time, mean_time, mean_sqr_time = 0., 0., 0., 0.
             for i in range(args.n_starts):
-                avg_mean_time += exp_res_dict['DetGNM'][name][n][i]["avg_time_s"]
-                avg_mean_sqr_time += exp_res_dict['DetGNM'][name][n][i]["avg_time_s"] ** 2
-                mean_time += exp_res_dict['DetGNM'][name][n][i]["time_s"]
-                mean_sqr_time += exp_res_dict['DetGNM'][name][n][i]["time_s"] ** 2
+                avg_mean_time += exp_res_dict['ClassicalDetGNM'][name][n][i]["avg_time_s"]
+                avg_mean_sqr_time += exp_res_dict['ClassicalDetGNM'][name][n][i]["avg_time_s"] ** 2
+                mean_time += exp_res_dict['ClassicalDetGNM'][name][n][i]["time_s"]
+                mean_sqr_time += exp_res_dict['ClassicalDetGNM'][name][n][i]["time_s"] ** 2
             avg_mean_time /= args.n_starts
             avg_mean_sqr_time /= args.n_starts
             mean_time /= args.n_starts
